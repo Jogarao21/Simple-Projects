@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stylish To-Do App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, rgb(245, 249, 251), rgb(196, 115, 93));
+      color: #e40cb2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      text-shadow: 1px 1px 4px #000;
+    }
+
+    .stats {
+      background: rgba(54, 200, 18, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 15px 25px;
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .stats span {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .input-section {
+      display: flex;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 25px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      border-radius: 8px 0 0 8px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #1abc9c;
+      border: none;
+      color: #fff;
+      border-radius: 0 8px 8px 0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #16a085;
+    }
+
+    ul {
+      width: 100%;
+      max-width: 600px;
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      color: #0f0d0d;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      position: relative;
+      transition: 0.3s ease;
+    }
+
+    li:hover {
+      transform: scale(1.01);
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    li.overdue {
+      border-left: 5px solid #ff4d4d;
+      background-color: rgba(255, 77, 77, 0.15);
+    }
+
+    .task-meta {
+      font-size: 12px;
+      color: #151212;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .input-section {
+        flex-direction: column;
+      }
+      input[type="text"], button {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>My To-Do List</h1>
+
+  <div class="stats">
+    <span>Total: <span id="totalCount">0</span></span>
+    <span>Active: <span id="activeCount">0</span></span>
+    <span>Completed: <span id="completedCount">0</span></span>
+    <span>Overdue: <span id="overdueCount">0</span></span>
+  </div>
+
+  <div class="input-section">
+    <input type="text" id="taskInput" placeholder="Add a new task..." />
+    <button onclick="addTask()">Add Task</button>
+  </div>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    const taskList = document.getElementById('taskList');
+    const totalCount = document.getElementById('totalCount');
+    const activeCount = document.getElementById('activeCount');
+    const completedCount = document.getElementById('completedCount');
+    const overdueCount = document.getElementById('overdueCount');
+
+    let tasks = [];
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const task = {
+        id: Date.now(),
+        text,
+        completed: false,
+        createdAt: new Date(),
+        overdue: false
+      };
+
+      tasks.push(task);
+      input.value = '';
+      renderTasks();
+    }
+
+    function toggleComplete(id) {
+      tasks = tasks.map(task =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      );
+      renderTasks();
+    }
+
+    function renderTasks() {
+      checkOverdueTasks();
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = `${task.completed ? 'completed' : ''} ${task.overdue ? 'overdue' : ''}`;
+        li.onclick = () => toggleComplete(task.id);
+        li.innerHTML = `
+          <div><strong>${task.text}</strong></div>
+          <div class="task-meta">Created: ${task.createdAt.toLocaleString()}</div>
+        `;
+        taskList.appendChild(li);
+      });
+
+      updateStats();
+    }
+
+    function checkOverdueTasks() {
+      const now = new Date();
+      tasks.forEach(task => {
+        if (!task.completed) {
+          const secondsPassed = (now - new Date(task.createdAt)) / 1000;
+          task.overdue = secondsPassed > 60; // 1 minute
+        }
+      });
+    }
+
+    function updateStats() {
+      totalCount.textContent = tasks.length;
+      activeCount.textContent = tasks.filter(t => !t.completed && !t.overdue).length;
+      completedCount.textContent = tasks.filter(t => t.completed).length;
+      overdueCount.textContent = tasks.filter(t => t.overdue && !t.completed).length;
+    }
+
+    setInterval(renderTasks, 30000); // auto-check overdue every 30 sec
+  </script>
+</body>
+</html>
+
+

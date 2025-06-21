@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .calculator {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    .display {
+      background: #000;
+      color: rgb(240, 240, 240);
+      padding: 20px;
+      font-size: 2em;
+      text-align: right;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 60px);
+      gap: 10px;
+    }
+    .buttons button {
+      padding: 13px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .buttons button.operator {
+      background: linear-gradient(skyblue, lightgreen);
+      color: rgb(16, 14, 14);
+    }
+    .buttons button.equal {
+      background: rgb(206, 88, 162);
+      color: white;
+      
+    }
+    .buttons button.clear {
+      background:rgb(161, 199, 154);
+      color: rgb(23, 20, 20);
+      
+    }
+    .buttons button.delete {
+      background: #444;
+      color: white;
+      display: flex;
+      justify-content: center;
+    }
+    button:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+        
+        button:active {
+            transform: translateY(0);
+        }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="clear" onclick="clearDisplay()">AC</button>
+      <button class="delete" onclick="deleteLast()">DEL</button>
+      <button class="equal" onclick="calculate()">=</button> 
+      <button class="operator" onclick="append('/')">/</button>  
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button class="operator" onclick="append('*')">*</button>
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button class="operator" onclick="append('+')">+</button>
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button class="operator" onclick="append('-')">-</button>
+      <button onclick="append('0')">0</button>
+      <button onclick="append('00')">00</button>
+      <button onclick="append('.')">.</button>
+      <button class="operator" onclick="append('%')">%</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function append(char) {
+      if (display.textContent === '0') {
+        display.textContent = char;
+      } else {
+        display.textContent += char;
+      }
+    }
+
+    function clearDisplay() {
+      display.textContent = '0';
+    }
+
+    function deleteLast() {
+      if (display.textContent.length > 1) {
+        display.textContent = display.textContent.slice(0, -1);
+      } else {
+        display.textContent = '0';
+      }
+    }
+
+    function calculate() {
+      try {
+        // Convert % to /100 for eval
+        let expression = display.textContent.replace(/%/g, '/100');
+        display.textContent = eval(expression);
+      } catch {
+        display.textContent = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
