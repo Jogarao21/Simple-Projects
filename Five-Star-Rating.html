@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Star Rating</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .rating-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .rating-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .star {
+            font-size: 3rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+
+        .star.active {
+            color: #ffd700;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+        }
+
+        .star.hover {
+            color: #ffed4e;
+            transform: scale(1.15);
+        }
+
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        .current-rating {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .current-rating.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .reset-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease;
+        }
+
+        .response-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .response-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .response-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Rating-specific styles */
+        .rating-1 {
+            background: #ffebee;
+            border: 2px solid #ffcdd2;
+        }
+
+        .rating-1 .response-text {
+            color: #d32f2f;
+        }
+
+        .rating-1 .action-btn {
+            background: #ffcdd2;
+            color: #d32f2f;
+        }
+
+        .rating-2 {
+            background: #fff3e0;
+            border: 2px solid #ffcc02;
+        }
+
+        .rating-2 .response-text {
+            color: #f57c00;
+        }
+
+        .rating-2 .action-btn {
+            background: #ffcc02;
+            color: #f57c00;
+        }
+
+        .rating-3 {
+            background: #fffde7;
+            border: 2px solid #fff176;
+        }
+
+        .rating-3 .response-text {
+            color: #f9a825;
+        }
+
+        .rating-3 .action-btn {
+            background: #fff176;
+            color: #f9a825;
+        }
+
+        .rating-4 {
+            background: #e3f2fd;
+            border: 2px solid #90caf9;
+        }
+
+        .rating-4 .response-text {
+            color: #1976d2;
+        }
+
+        .rating-4 .action-btn {
+            background: #90caf9;
+            color: #1976d2;
+        }
+
+        .rating-5 {
+            background: #e8f5e8;
+            border: 2px solid #a5d6a7;
+        }
+
+        .rating-5 .response-text {
+            color: #388e3c;
+        }
+
+        .rating-5 .action-btn {
+            background: #a5d6a7;
+            color: #388e3c;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .rating-container {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .star {
+                font-size: 2.5rem;
+            }
+
+            .stars-container {
+                gap: 10px;
+            }
+
+            .rating-labels {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .star {
+                font-size: 2rem;
+            }
+
+            .stars-container {
+                gap: 8px;
+            }
+        }
+
+        /* Animation for star sparkle effect */
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .star.sparkle {
+            animation: sparkle 0.6s ease-in-out;
+        }
+
+        /* Pulse animation for response section */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .response-section.pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="rating-container">
+        <h1 class="title">Rate Your Experience</h1>
+        <p class="subtitle">Click on a star to share your feedback</p>
+        
+        <div class="stars-container">
+            <span class="star" data-rating="1">★</span>
+            <span class="star" data-rating="2">★</span>
+            <span class="star" data-rating="3">★</span>
+            <span class="star" data-rating="4">★</span>
+            <span class="star" data-rating="5">★</span>
+        </div>
+        
+        <div class="rating-labels">
+            <span>Poor</span>
+            <span>Fair</span>
+            <span>Good</span>
+            <span>Very Good</span>
+            <span>Excellent</span>
+        </div>
+        
+        <div class="current-rating" id="currentRating"></div>
+        
+        <button class="reset-btn" id="resetBtn" onclick="resetRating()">Reset Rating</button>
+        
+        <div class="response-section" id="responseSection">
+            <div class="response-icon" id="responseIcon"></div>
+            <div class="response-text" id="responseText"></div>
+            <button class="action-btn" id="actionBtn"></button>
+        </div>
+        
+        <div class="footer">
+            ✨ Interactive • Responsive • Animated ✨
+        </div>
+    </div>
+
+    <script>
+        let currentRating = 0;
+        const stars = document.querySelectorAll('.star');
+        const currentRatingDiv = document.getElementById('currentRating');
+        const resetBtn = document.getElementById('resetBtn');
+        const responseSection = document.getElementById('responseSection');
+        const responseIcon = document.getElementById('responseIcon');
+        const responseText = document.getElementById('responseText');
+        const actionBtn = document.getElementById('actionBtn');
+
+        const responses = {
+            1: {
+                icon: '😢',
+                text: "Oh no! We're sorry you had such a poor experience. Your feedback helps us improve!",
+                className: 'rating-1',
+                actionText: 'Contact Support'
+            },
+            2: {
+                icon: '😐',
+                text: "We appreciate your feedback! There's definitely room for improvement, and we're working on it.",
+                className: 'rating-2',
+                actionText: 'Send Feedback'
+            },
+            3: {
+                icon: '🙂',
+                text: "Thank you for your rating! We're glad it was okay, but we'd love to make it even better next time.",
+                className: 'rating-3',
+                actionText: 'Suggest Improvements'
+            },
+            4: {
+                icon: '👍',
+                text: "Great! We're so happy you had a good experience. Thanks for taking the time to rate us!",
+                className: 'rating-4',
+                actionText: 'Share Experience'
+            },
+            5: {
+                icon: '❤️',
+                text: "Wow! Amazing! Thank you so much for the 5-star rating. You've made our day! ⭐",
+                className: 'rating-5',
+                actionText: 'Share Your Experience'
+            }
+        };
+
+        // Add event listeners to stars
+        stars.forEach((star, index) => {
+            // Click event
+            star.addEventListener('click', () => {
+                const rating = index + 1;
+                setRating(rating);
+                
+                // Add sparkle animation
+                star.classList.add('sparkle');
+                setTimeout(() => {
+                    star.classList.remove('sparkle');
+                }, 600);
+            });
+
+            // Hover events
+            star.addEventListener('mouseenter', () => {
+                highlightStars(index + 1, true);
+            });
+
+            star.addEventListener('mouseleave', () => {
+                highlightStars(currentRating, false);
+            });
+        });
+
+        function highlightStars(rating, isHover = false) {
+            stars.forEach((star, index) => {
+                star.classList.remove('active', 'hover');
+                if (index < rating) {
+                    if (isHover && currentRating === 0) {
+                        star.classList.add('hover');
+                    } else {
+                        star.classList.add('active');
+                    }
+                }
+            });
+        }
+
+        function setRating(rating) {
+            currentRating = rating;
+            highlightStars(rating);
+            
+            // Show current rating
+            currentRatingDiv.textContent = `Your Rating: ${rating} star${rating !== 1 ? 's' : ''}`;
+            currentRatingDiv.classList.add('show');
+            
+            // Show reset button
+            resetBtn.classList.add('show');
+            
+            // Show response
+            showResponse(rating);
+        }
+
+        function showResponse(rating) {
+            const response = responses[rating];
+            
+            // Remove all rating classes
+            responseSection.className = 'response-section';
+            
+            // Add new rating class
+            responseSection.classList.add(response.className);
+            
+            // Set content
+            responseIcon.textContent = response.icon;
+            responseText.textContent = response.text;
+            actionBtn.textContent = response.actionText;
+            
+            // Show with animation
+            setTimeout(() => {
+                responseSection.classList.add('show');
+                responseSection.classList.add('pulse');
+                
+                setTimeout(() => {
+                    responseSection.classList.remove('pulse');
+                }, 500);
+            }, 200);
+
+            // Add click event to action button
+            actionBtn.onclick = () => {
+                alert(`Thank you for choosing to "${response.actionText}"! This would typically redirect to the appropriate page.`);
+            };
+        }
+
+        function resetRating() {
+            currentRating = 0;
+            
+            // Reset stars
+            stars.forEach(star => {
+                star.classList.remove('active', 'hover');
+            });
+            
+            // Hide elements
+            currentRatingDiv.classList.remove('show');
+            resetBtn.classList.remove('show');
+            responseSection.classList.remove('show');
+            
+            // Clear response section classes
+            setTimeout(() => {
+                responseSection.className = 'response-section';
+            }, 500);
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '5') {
+                const rating = parseInt(e.key);
+                setRating(rating);
+            } else if (e.key === 'Escape' || e.key === '0') {
+                resetRating();
+            }
+        });
+
+        // Add touch events for better mobile experience
+        stars.forEach((star, index) => {
+            star.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                highlightStars(index + 1, true);
+            });
+            
+            star.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                setRating(index + 1);
+            });
+        });
+    </script>
+</body>
+</html>
